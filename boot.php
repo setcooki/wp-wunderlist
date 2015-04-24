@@ -9,8 +9,6 @@ try
     require_once dirname(__FILE__) . '/lib/vendor/autoload.php';
     require_once dirname(__FILE__) . '/lib/vendor/setcooki/wp/core.php';
 
-    $plugin = new \Setcooki\Wp\Wunderlist\Plugin();
-
     $conf = array
     (
         SETCOOKI_WP_CONFIG => array(array

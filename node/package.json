@@ -1,0 +1,12 @@
+{
+    "name": "wunderlist-todo-socket",
+    "author": "setcookie <set@cooki.me>",
+    "version": "0.0.1",
+    "license": "MIT",
+    "description": "wunderlist todo socket server",
+    "repository" : {},
+    "dependencies": {
+        "express": ">= 4.x.x",
+        "socket.io": "latest"
+    }
+}

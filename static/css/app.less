@@ -1,0 +1,124 @@
+
+@import "wunderlist/pictograms.less";
+
+.wuto{
+  display: block;
+  content: ".";
+  clear: both;
+}
+
+.wuto .hide{
+  display: none;
+}
+
+.wuto .show{
+  display: block;
+}
+
+.wuto-list{
+  margin: @listMargin;
+  padding: @listPadding;
+}
+
+.wuto-list-title{
+  color: @listTextColor;
+  margin: @listMargin;
+  padding: @listPadding;
+}
+
+.wuto-tasks{
+  overflow: hidden;
+  color: @taskTextColor;
+}
+
+.wuto-tasks > li{
+  list-style: outside none none;
+  margin: @taskMargin;
+  padding: @taskPadding;
+}
+
+.wuto-task{
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  text-rendering: optimizelegibility;
+}
+
+.wuto-task-body{
+  overflow: hidden;
+  position: relative;
+  background-image: linear-gradient(to bottom, @taskBodyBackgroundColorTop, @taskBodyBackgroundColorBottom);
+  border: @taskBodyBorder;
+  border-radius: @taskBodyBorderRadius;
+  box-shadow: @taskBodyShadowBox rgba(red(@taskBodyShadowColor), green(@taskBodyShadowColor), blue(@taskBodyShadowColor), 0.3);
+  box-sizing: border-box;
+}
+
+.wuto-task-header, .wuto-task-content{
+  z-index: 1;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+.readonly .wuto-task-content, .readonly .wuto-task-title{
+  margin: @taskBodyMargin;
+}
+
+.wuto-task-header{
+  background: @taskHeaderBackground;
+}
+
+.wuto-task-title{
+  font-size: @taskFontSize;
+}
+
+.wuto-task-body a{
+  text-decoration: none;
+  color: @taskLinkColor;
+  border: 0;
+}
+
+.wuto-task-body a:hover{
+  color: @taskLinkColorHover;
+}
+
+.wuto-task-body .wundercon{
+  font-size: 16px;
+  width: 21px;
+  height: 36px;
+  box-sizing: border-box;
+  color: rgba(red(@taskTextColor), green(@taskTextColor), blue(@taskTextColor), 0.2);
+}
+
+.wuto-task-body .wundercon.star{
+  float:right;
+  padding-top: 9px;
+  margin-left: 4px;
+  margin-right: 8px;
+  cursor: default;
+}
+
+.wuto-task-body .wundercon.note{
+  float:right;
+  padding-top: 10px;
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.wuto-task-body .wundercon.has{
+  color: @taskTextColor;
+}
+
+.wuto-note-content{
+  font-size: @noteFontSize;
+  color: @noteTextColor;
+}
+
+.wuto-note-content a{
+  color: @noteLinkColor;
+}
+
+.wuto-note-content a:hover{
+  color: @noteLinkColorHover;
+}
