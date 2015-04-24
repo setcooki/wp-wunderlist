@@ -31,5 +31,5 @@
     "setcooki/wp": "@dev",
     "oyejorge/less.php": "~1.5"
   },
-  "minimum-stability": "dev"
+  "minimum-stability": "stable"
 }
