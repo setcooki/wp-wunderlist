@@ -31,5 +31,8 @@
     "setcooki/wp": "@dev",
     "oyejorge/less.php": "~1.5"
   },
+  "autoload":{
+    "classmap": ["src/"]
+  },
   "minimum-stability": "stable"
 }
