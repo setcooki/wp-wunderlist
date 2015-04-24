@@ -1,0 +1,35 @@
+{
+  "name": "wp-wunderlist",
+  "description": "WP Wunderlist Plugin (Basic)",
+  "version": "0.0.1",
+  "type": "wordpress-plugin",
+  "keywords": ["wordpress", "wp", "wunderlist", "plugin"],
+  "homepage": "https://github.com/setcooki/wp-wunderlist",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "setcooki",
+      "email": "set@cooki.me",
+      "homepage": "http://set.cooki.me"
+    }
+  ],
+  "support":{
+    "issues": "https://github.com/setcooki/wp-wunderlist/issues",
+    "wiki": "https://github.com/setcooki/wp-wunderlist/wiki"
+  },
+  "config": {
+    "vendor-dir": "lib/vendor"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/setcooki/wp"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.1",
+    "setcooki/wp": "@dev",
+    "oyejorge/less.php": "~1.5"
+  },
+  "minimum-stability": "dev"
+}
