@@ -50,17 +50,22 @@ class Wunderlist extends Front
 					}
                     if($params->has('view'))
                     {
-                        $view = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('view'), DIRECTORY_SEPARATOR);
+	                    if(stripos($params->get('view'), DIRECTORY_SEPARATOR) !== false)
+	                    {
+		                    $view = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('view'), DIRECTORY_SEPARATOR);
+	                    }else{
+
+	                    }
                     }else{
-                        $view = rtrim(setcooki_get_option('VIEW_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . 'ListView.php';
+                        $view = rtrim(setcooki_get_option('VIEW_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . 'Standard.php';
                     }
-					$view = apply_filters('wp_wunderlist_view', $view);
                     if($params->has('template'))
                     {
                         $template = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('template'), DIRECTORY_SEPARATOR);
                     }else{
-                        $template = rtrim(setcooki_get_option('TEMPLATE_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . 'list.mustache';
+                        $template = rtrim(setcooki_get_option('TEMPLATE_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'standard' . DIRECTORY_SEPARATOR . 'list.mustache';
                     }
+					$view = apply_filters('wp_wunderlist_view', $view);
                     $template = apply_filters('wp_wunderlist_template', $template);
                     if(is_file($view))
                     {
@@ -106,7 +111,7 @@ class Wunderlist extends Front
 		}
 		catch(Exception $e)
 		{
-			print_r($e);
+			echo $e->getMessage();
 		}
 	}
 

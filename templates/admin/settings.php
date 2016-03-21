@@ -1,5 +1,8 @@
 <?php
 
+$views                      = array();
+$themes                     = array();
+
 $client_id                  = get_option('wp_wunderlist_client_id', '');
 $client_secret              = get_option('wp_wunderlist_client_secret', '');
 $access_token               = get_option('wp_wunderlist_access_token', '');
@@ -12,6 +15,7 @@ $live_poll_interval         = (array_key_exists('live', $options) && isset($opti
 $live_push_host             = (array_key_exists('live', $options) && isset($options['live']['push']['host'])) ? $options['live']['push']['host'] : '';
 $live_push_port             = (array_key_exists('live', $options) && isset($options['live']['push']['port'])) ? $options['live']['push']['port'] : '';
 $security_whitelist         = (array_key_exists('security', $options) && isset($options['security']['whitelist'])) ? $options['security']['whitelist'] : '';
+$list_default_view          = (array_key_exists('list', $options) && isset($options['list']['default_view'])) ? $options['list']['default_view'] : rtrim(setcooki_get_option('VIEW_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'Standard.php';
 $list_show_title            = (array_key_exists('list', $options) && isset($options['list']['show_title']));
 $list_title_wrapper         = (array_key_exists('list', $options) && isset($options['list']['title_wrapper'])) ? trim($options['list']['title_wrapper']) : '';
 $task_show_starred          = (array_key_exists('task', $options) && isset($options['task']['show_starred']));
@@ -22,20 +26,28 @@ $css_theme                  = (array_key_exists('css', $options) && isset($optio
 $admin_debug                = (array_key_exists('admin', $options) && isset($options['admin']['debug']));
 $admin_log                  = (array_key_exists('admin', $options) && isset($options['admin']['log']));
 
+if(setcooki_has_option('VIEW_PATH', $this->wp->front, true))
+{
+    $path = rtrim(setcooki_get_option('VIEW_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    foreach((array)@glob($path . '*.php') as $view)
+    {
+        $views[$path . basename($view)] = basename($view, '.php');
+    }
+}
 if(setcooki_has_option('THEME_PATH', $this->wp->front, true))
 {
     $path = rtrim(setcooki_get_option('THEME_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-    foreach((array)@glob(setcooki_path('root') . $path . '*.less') as $css)
+    foreach((array)@glob(setcooki_path('root') . $path . '*.less') as $theme)
     {
-        $themes[$path . basename($css)] = basename($css, '.less');
+        $themes[$path . basename($theme)] = basename($theme, '.less');
     }
 }
 if(setcooki_has_option('THEME_CUSTOM_PATH', $this->wp->front, true))
 {
     $path = rtrim(setcooki_get_option('THEME_CUSTOM_PATH', $$this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-    foreach((array)@glob(setcooki_path('root') . $path . '*.less') as $css)
+    foreach((array)@glob(setcooki_path('root') . $path . '*.less') as $theme)
     {
-        $themes[$path . basename($css)] = basename($css, '.less');
+        $themes[$path . basename($theme)] = basename($theme, '.less');
     }
 }
 ?>
@@ -108,7 +120,6 @@ if(setcooki_has_option('THEME_CUSTOM_PATH', $this->wp->front, true))
             <? } ?>
 
             <!-- SECURITY OPTIONS //-->
-
             <tr valign="top" style="border-top: 1px solid #ddd;">
                 <th colspan="2"><h3 style="margin:0;">Security Options</h3></th>
             </tr>
@@ -155,6 +166,19 @@ if(setcooki_has_option('THEME_CUSTOM_PATH', $this->wp->front, true))
             <!-- LIST OPTIONS //-->
             <tr valign="top" style="border-top: 1px solid #ddd;">
                 <th colspan="2"><h3 style="margin:0;">List Options</h3></th>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wp_wunderlist_options_list_default_view">Default list view</label></th>
+                <td>
+                    <div style="float:left">
+                        <select name="wp_wunderlist_options[list][default_view]" id="wp_wunderlist_options_list_default_view" size="1">
+                            <?php setcooki_dropdown($views, $list_default_view); ?>
+                        </select>
+                    </div>
+                    <div style="float:left;padding:5px">
+                        <span class="description">Select a default view</span>
+                    </div>
+                </td>
             </tr>
             <tr valign="top">
                 <th scope="row"><label for="wp_wunderlist_options_list_show_title">Show list title</label></th>
@@ -252,6 +276,7 @@ unset($live_poll_interval);
 unset($live_push_host);
 unset($live_push_port);
 unset($security_whitelist);
+unset($list_default_view);
 unset($list_show_title);
 unset($list_title_wrapper);
 unset($task_show_starred);
@@ -262,3 +287,4 @@ unset($css_theme);
 unset($themes);
 unset($admin_debug);
 unset($admin_log);
+unset($views);

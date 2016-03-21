@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Class ListView
+ * Class Standard
  */
-class ListView extends Setcooki\Wp\Wunderlist\View\ListView
+class Standard extends \Setcooki\Wp\Wunderlist\View\Front\Standard
 {
     /**
      * modify view behaviour or functionality by overwriting or extending this class/method. you can access controller

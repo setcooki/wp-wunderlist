@@ -108,14 +108,6 @@ class Plugin extends \Setcooki\Wp\Plugin
             $this->webhook->tokenize();
         }
 
-        /*if(($options = Option::get('wp_wunderlist_options')) !== false)
-        {
-            if(isset($options['admin']['debug']) && (bool)$options['admin']['debug'])
-            {
-
-            }
-        }*/
-
         $this->admin->init();
         $this->front->init();
 

@@ -1,17 +1,18 @@
 <?php
 
-namespace Setcooki\Wp\Wunderlist\View;
+namespace Setcooki\Wp\Wunderlist\View\Front;
 
 use Setcooki\Wp\Template;
 use Setcooki\Wp\Option;
 use Setcooki\Wp\Util\Params;
 use Setcooki\Wp\Wunderlist\Model\Model;
+use Setcooki\Wp\Wunderlist\View\View;
 
 /**
- * Class ListView
- * @package Setcooki\Wp\Wunderlist\View
+ * Class Standard
+ * @package Setcooki\Wp\Wunderlist\View\Front
  */
-class ListView extends View
+class Standard extends View
 {
     /**
      * @param Params $params
