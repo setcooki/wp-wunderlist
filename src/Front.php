@@ -21,7 +21,6 @@ class Front
     const THEME_PATH                = 'THEME_PATH';
     const THEME_CUSTOM_PATH         = 'THEME_CUSTOM_PATH';
     const CUSTOM_STYLES             = 'CUSTOM_STYLES';
-    const DEFAULT_TYPE              = 'DEFAULT_TYPE';
 
     /**
      * @var null|Plugin
@@ -38,7 +37,6 @@ class Front
      */
     public $options = array
     (
-        self::DEFAULT_TYPE          => 'list'
     );
 
 

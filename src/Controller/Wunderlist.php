@@ -44,31 +44,22 @@ class Wunderlist extends Front
 	            $id = (int)$params->get('id');
 				if($this->whitelist($id))
 				{
-					if($params->has('type'))
+					if(Option::get('wp_wunderlist_options.live.mode') === 'push')
 					{
-						$params->set('type', strtolower(trim($params->get('type'))));
-					}else{
-					    $params->set('type', strtolower(setcooki_get_option('DEFAULT_TYPE', $front)));
+				        $this->wp->webhook->create($id, 'list');
 					}
-                    if($params->get('type') === 'list')
-                    {
-                        if(Option::get('wp_wunderlist_options.live.mode') === 'push')
-                        {
-                            $this->wp->webhook->create($id, 'list');
-                        }
-                    }
                     if($params->has('view'))
                     {
                         $view = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('view'), DIRECTORY_SEPARATOR);
                     }else{
-                        $view = rtrim(setcooki_get_option('VIEW_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ucfirst($params->get('type')) . 'View.php';
+                        $view = rtrim(setcooki_get_option('VIEW_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . 'ListView.php';
                     }
 					$view = apply_filters('wp_wunderlist_view', $view);
                     if($params->has('template'))
                     {
                         $template = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('template'), DIRECTORY_SEPARATOR);
                     }else{
-                        $template = rtrim(setcooki_get_option('TEMPLATE_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . $params->get('type') . '.mustache';
+                        $template = rtrim(setcooki_get_option('TEMPLATE_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . 'list.mustache';
                     }
                     $template = apply_filters('wp_wunderlist_template', $template);
                     if(is_file($view))
@@ -88,7 +79,7 @@ class Wunderlist extends Front
 	                                $view = new $view($this, new \Mustache_Engine($options));
 	                                $view->execute((array)$params);
 		                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
-		                            $template = $view->view->loadTemplate($params->get('type'));
+		                            $template = $view->view->loadTemplate('list');
 		                            return $template->render($vars);
 	                            }else{
 	                                $view = new $view($this);
