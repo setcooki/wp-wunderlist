@@ -1,6 +1,6 @@
 /node_modules
 *.iml
 .idea/
-lib
-tmp
+/lib
+/tmp
 config.inc
