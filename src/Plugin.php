@@ -2,7 +2,10 @@
 
 namespace Setcooki\Wp\Wunderlist;
 
+use Setcooki\Wp\Controller\Resolver;
 use Setcooki\Wp\Option;
+use Setcooki\Wp\Routing\Router;
+use Setcooki\Wp\Wunderlist\Model\Model;
 
 class Plugin extends \Setcooki\Wp\Plugin
 {
@@ -22,6 +25,21 @@ class Plugin extends \Setcooki\Wp\Plugin
     public $api = null;
 
     /**
+     * @var null|Webhook
+     */
+    public $webhook = null;
+
+    /**
+     * @var null|Resolver
+     */
+    public $resolver = null;
+
+    /**
+     * @var null|Router
+     */
+    public $router = null;
+
+    /**
      * @var array
      */
     public $options = array();
@@ -34,10 +52,16 @@ class Plugin extends \Setcooki\Wp\Plugin
     {
         parent::__construct($options);
 
-        $this->api = new Api(setcooki_config('wunderlist', 'api.options'));
-        $this->admin = new Admin($this, setcooki_config('wunderlist', 'admin.options'));
-        $this->front = new Front($this, setcooki_config('wunderlist', 'front.options'));
-        $this->webhook = new Webhook($this);
+        $this->api      = new Api(setcooki_config('api.options'));
+        $this->admin    = new Admin($this, setcooki_config('admin.options'));
+        $this->front    = new Front($this, setcooki_config('front.options'));
+        $this->webhook  = new Webhook($this, setcooki_config('webhook.options'));
+
+        Model::setApi($this->api);
+        Model::setModel(setcooki_config('model.map'));
+
+        $this->resolver = Resolver::create($this);
+        $this->router   = Router::create($this);
     }
 
 
@@ -50,22 +74,22 @@ class Plugin extends \Setcooki\Wp\Plugin
         $this->test();
 
         //make a auth code if not set
-        if(!get_option('wunderlist_todo_auth_state', false))
+        if(!get_option('wp_wunderlist_auth_state', false))
         {
-            add_option('wunderlist_todo_auth_state', substr(md5(rand()), 0, 16));
+            add_option('wp_wunderlist_auth_state', substr(md5(rand()), 0, 16));
         }
         //set api client id
-        if(($client_id = get_option('wunderlist_todo_client_id', false)) !== false)
+        if(($client_id = get_option('wp_wunderlist_client_id', false)) !== false)
         {
             $this->api->setClientId($client_id);
         }
         //set api client secret
-        if(($client_secret = get_option('wunderlist_todo_client_secret', false)) !== false)
+        if(($client_secret = get_option('wp_wunderlist_client_secret', false)) !== false)
         {
             $this->api->setClientSecret($client_secret);
         }
         //set api access token
-        if(($token = get_option('wunderlist_todo_access_token', false)) !== false)
+        if(($token = get_option('wp_wunderlist_access_token', false)) !== false)
         {
             $this->api->setAccessToken($token);
         }
@@ -73,16 +97,24 @@ class Plugin extends \Setcooki\Wp\Plugin
         $this->api->setCallbackUrl(setcooki_path('plugin', true, true) . '/auth.php');
 
         //set default options
-        if(!Option::has('wunderlist_todo_store'))
+        if(!Option::has('wp_wunderlist_store'))
         {
-            Option::set('wunderlist_todo_store', array());
+            Option::set('wp_wunderlist_store', array());
         }
 
         //set webhook token
-        if(!Option::has('wunderlist_todo_webhook_token'))
+        if(!Option::has('wp_wunderlist_webhook_token'))
         {
             $this->webhook->tokenize();
         }
+
+        /*if(($options = Option::get('wp_wunderlist_options')) !== false)
+        {
+            if(isset($options['admin']['debug']) && (bool)$options['admin']['debug'])
+            {
+
+            }
+        }*/
 
         $this->admin->init();
         $this->front->init();
@@ -90,16 +122,16 @@ class Plugin extends \Setcooki\Wp\Plugin
         //get access token from api auth redirect and store
         if
         (
-            is_admin() && (isset($_GET['page']) && $_GET['page'] === 'wunderlist_todo_settings')
+            is_admin() && (isset($_GET['page']) && $_GET['page'] === 'wp_wunderlist_settings')
             &&
             isset($_GET['code']) && (isset($_GET['callback']) && (int)$_GET['callback'] === 1)
         ){
-            if((string)Option::get('wunderlist_todo_auth_state', '') === (string)$_GET['state'])
+            if((string)Option::get('wp_wunderlist_auth_state', '') === (string)$_GET['state'])
             {
                 $token = $this->api->getAccessToken($_GET['code']);
-                Option::save('wunderlist_todo_access_token', $token);
-                Option::delete('wunderlist_todo_auth_state');
-                wp_redirect('/wp-admin/options-general.php?page=wunderlist_todo_settings&token=1');
+                Option::save('wp_wunderlist_access_token', $token);
+                Option::delete('wp_wunderlist_auth_state');
+                wp_redirect('/wp-admin/options-general.php?page=wp_wunderlist_settings&token=1');
             }
         }
     }
@@ -129,7 +161,7 @@ class Plugin extends \Setcooki\Wp\Plugin
     /**
      *
      */
-    public function activation()
+    public function activate()
     {
 
     }
@@ -140,18 +172,27 @@ class Plugin extends \Setcooki\Wp\Plugin
      *
      * @return void
      */
-    public function deactivation()
+    public function deactivate()
     {
-        $this->webhook->deleteAll();
         $var = setcooki_path('plugin') . '/var/';
         if(is_file($var . '/options.json'))
         {
-            unlink($var . '/options.json');
+            @unlink($var . '/options.json');
         }
         if(is_file($var . '/token.json'))
         {
-            unlink($var . '/token.json');
+            @unlink($var . '/token.json');
         }
-        Option::delete('wunderlist_todo_*');
+        setcooki_cache();
+    }
+
+
+    /**
+     * on uninstall delete webhooks and options
+     */
+    public function uninstall()
+    {
+        $this->webhook->deleteAll();
+        Option::delete('wp_wunderlist_*');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+if(!defined('ABSPATH')) die();
+
 /**
  * NOTE: DON'T CHANGE ANY CONFIG VALUES HERE!
  *
@@ -11,13 +13,9 @@
 
 return array
 (
-    'logger' => array
+    'wp' => array
     (
-        'dir' => dirname(__FILE__) . '/../var/log',
-        'options' => array
-        (
-            'LOG_LEVEL' => 0
-        )
+        'LOGGER' => \Setcooki\Wp\Logger::create(array('LOG_DIR' => dirname(__FILE__) . '/../var/log', 'LOG_LEVEL' => 0))
     ),
     'cache' => array
     (
@@ -44,6 +42,17 @@ return array
             'API_AUTH_URL' => 'https://www.wunderlist.com/oauth/authorize',
             'API_ACCESS_TOKEN_URL' => 'https://www.wunderlist.com/oauth/access_token'
         )
+    ),
+    'model' => array
+    (
+        'map' => array
+        (
+            'Wunderlist' => '\Setcooki\Wp\Wunderlist\Entity\Wunderlist'
+        )
+    ),
+    'admin' => array
+    (
+        'options' => array()
     ),
     'front' => array
     (
@@ -73,15 +82,15 @@ return array
     (
         'conf' => array
         (
-            'dev' => 0,
+            'dev' => (int)(bool)SETCOOKI_DEV,
             'base' => setcooki_path('plugin', true),
-            'debug' => 0,
+            'debug' => (int)SETCOOKI_DEV,
             'css' => array
             (
-                'listRoot' => '.wuto-list',
-                'taskRoot' => '.wuto-task',
-                'noteRoot' => '.wuto-note',
-                'tasksRoot' => '.wuto-tasks'
+                'listRoot' => '.wpwl-list',
+                'taskRoot' => '.wpwl-task',
+                'noteRoot' => '.wpwl-note',
+                'tasksRoot' => '.wpwl-tasks'
             )
         )
     )

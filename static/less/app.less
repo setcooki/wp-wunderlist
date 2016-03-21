@@ -1,50 +1,50 @@
 
 @import "wunderlist/pictograms.less";
 
-.wuto{
+.wpwl{
   display: block;
   content: ".";
   clear: both;
 }
 
-.wuto .hide{
+.wpwl .hide{
   display: none;
 }
 
-.wuto .show{
+.wpwl .show{
   display: block;
 }
 
-.wuto-list{
+.wpwl-list{
   margin: @listMargin;
   padding: @listPadding;
 }
 
-.wuto-list-title{
+.wpwl-list-title{
   color: @listTextColor;
   margin: @listMargin;
   padding: @listPadding;
 }
 
-.wuto-tasks{
+.wpwl-tasks{
   overflow: hidden;
   color: @taskTextColor;
 }
 
-.wuto-tasks > li{
+.wpwl-tasks > li{
   list-style: outside none none;
   margin: @taskMargin;
   padding: @taskPadding;
 }
 
-.wuto-task{
+.wpwl-task{
   margin: 0;
   padding: 0;
   text-decoration: none;
   text-rendering: optimizelegibility;
 }
 
-.wuto-task-body{
+.wpwl-task-body{
   overflow: hidden;
   position: relative;
   background-image: linear-gradient(to bottom, @taskBodyBackgroundColorTop, @taskBodyBackgroundColorBottom);
@@ -54,36 +54,36 @@
   box-sizing: border-box;
 }
 
-.wuto-task-header, .wuto-task-content{
+.wpwl-task-header, .wpwl-task-content{
   z-index: 1;
   display: block;
   overflow: hidden;
   position: relative;
 }
 
-.readonly .wuto-task-content, .readonly .wuto-task-title{
+.readonly .wpwl-task-content, .readonly .wpwl-task-title{
   margin: @taskBodyMargin;
 }
 
-.wuto-task-header{
+.wpwl-task-header{
   background: @taskHeaderBackground;
 }
 
-.wuto-task-title{
+.wpwl-task-title{
   font-size: @taskFontSize;
 }
 
-.wuto-task-body a{
+.wpwl-task-body a{
   text-decoration: none;
   color: @taskLinkColor;
   border: 0;
 }
 
-.wuto-task-body a:hover{
+.wpwl-task-body a:hover{
   color: @taskLinkColorHover;
 }
 
-.wuto-task-body .wundercon{
+.wpwl-task-body .wundercon{
   font-size: 16px;
   width: 21px;
   height: 36px;
@@ -91,7 +91,7 @@
   color: rgba(red(@taskTextColor), green(@taskTextColor), blue(@taskTextColor), 0.2);
 }
 
-.wuto-task-body .wundercon.star{
+.wpwl-task-body .wundercon.star{
   float:right;
   padding-top: 9px;
   margin-left: 4px;
@@ -99,26 +99,26 @@
   cursor: default;
 }
 
-.wuto-task-body .wundercon.note{
+.wpwl-task-body .wundercon.note{
   float:right;
   padding-top: 10px;
   margin-left: 6px;
   cursor: pointer;
 }
 
-.wuto-task-body .wundercon.has{
+.wpwl-task-body .wundercon.has{
   color: @taskTextColor;
 }
 
-.wuto-note-content{
+.wpwl-note-content{
   font-size: @noteFontSize;
   color: @noteTextColor;
 }
 
-.wuto-note-content a{
+.wpwl-note-content a{
   color: @noteLinkColor;
 }
 
-.wuto-note-content a:hover{
+.wpwl-note-content a:hover{
   color: @noteLinkColorHover;
 }

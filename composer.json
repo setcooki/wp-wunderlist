@@ -6,8 +6,7 @@
   "keywords": ["wordpress", "wp", "wunderlist", "plugin"],
   "homepage": "https://github.com/setcooki/wp-wunderlist",
   "license": "MIT",
-  "authors": [
-    {
+  "authors": [{
       "name": "setcooki",
       "email": "set@cooki.me",
       "homepage": "http://set.cooki.me"
@@ -20,19 +19,21 @@
   "config": {
     "vendor-dir": "lib/vendor"
   },
-  "repositories": [
-    {
-      "type": "vcs",
+  "repositories": [{
+      "type": "git",
       "url": "https://github.com/setcooki/wp"
     }
   ],
   "require": {
-    "php": ">=5.3.1",
-    "setcooki/wp": "@dev",
-    "oyejorge/less.php": "~1.5"
+    "php": ">=5.4",
+    "setcooki/wp": "dev-dev",
+    "mustache/mustache": "~2.5",
+    "oyejorge/less.php": "~1.7.0.9"
   },
   "autoload":{
-    "classmap": ["src/"]
+    "psr-4": {
+      "Setcooki\\Wp\\Wunderlist\\": "src/"
+    }
   },
   "minimum-stability": "stable"
 }

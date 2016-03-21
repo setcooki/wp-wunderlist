@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Class ListView
+ * Class TaskView
  */
-class ListView extends \Setcooki\Wunderlist\Todo\View\ListView
+class TaskView extends \Setcooki\Wp\Wunderlist\View\TaskView
 {
     /**
      * modify view behaviour or functionality by overwriting or extending this class/method

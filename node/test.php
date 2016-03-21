@@ -36,7 +36,7 @@ if($argc >= 1)
 
     if(array_key_exists('notify', $args) && array_key_exists('action', $args))
     {
-        $token = (string)get_option('wunderlist_todo_webhook_token', '');
+        $token = (string)get_option('wp_wunderlist_webhook_token', '');
         $notify = str_replace('=', ':', $args['notify']);
         $action = (string)$args['action'];
         if(array_key_exists('data', $args))

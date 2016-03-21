@@ -7,7 +7,7 @@ use Setcooki\Wp\Option;
 
 /**
  * Class Webhook
- * @package Setcooki\Wunderlist\Todo
+ * @package Setcooki\Wp\Wunderlist
  */
 class Webhook
 {
@@ -63,15 +63,15 @@ class Webhook
         {
             $id         = (int)$id;
             $type       = (string)$type;
-            $token      = Option::get('wunderlist_todo_webhook_token', '');
+            $token      = Option::get('wp_wunderlist_webhook_token', '');
             $url        = setcooki_path('plugin', true, true) . "/webhook.php?token=$token&notify=$type:$id";
             $hook       = "$type:$id";
             $hook_id    = null;
             $params     = array();
 
-            if(($store = Option::has('wunderlist_todo_store', 'webhooks')) === false)
+            if(($store = Option::has('wp_wunderlist_store.webhooks')) === false)
             {
-                $store = Option::save('wunderlist_todo_store', array(), 'webhooks');
+                $store = Option::save('wp_wunderlist_store.webhooks', array());
             }
 
             if(array_key_exists('webhooks', $store) && !array_key_exists($hook, $store['webhooks']))
@@ -97,7 +97,7 @@ class Webhook
                 {
                     $params = $this->plugin->api->createWebhook($id, $url);
                     $hook_id = (int)$params->id;
-                    Option::save('wunderlist_todo_store', $hook_id, "webhooks.$hook");
+                    Option::save("wp_wunderlist_store.webhooks.$hook", $hook_id);
                 }
             }
         }
@@ -124,7 +124,7 @@ class Webhook
         $params['webhook'] = md5(uniqid(mt_rand(), true));
         if(file_put_contents(setcooki_path('plugin'). '/var/token.json', json_encode($params)))
         {
-            Option::set('wunderlist_todo_webhook_token', $params['webhook']);
+            Option::set('wp_wunderlist_webhook_token', $params['webhook']);
         }else{
             throw new Exception(setcooki_sprintf("token cache log file: %s could not be written", $cache));
         }
@@ -143,7 +143,7 @@ class Webhook
             $type = trim((string)$type);
 
             $this->plugin->api->deleteWebhooks($id);
-            $options = (array)Option::get('wunderlist_todo_store', array());
+            $options = (array)Option::get('wp_wunderlist_store', array());
             if(array_key_exists('webhooks', $options))
             {
                 $tmp = array();
@@ -154,7 +154,7 @@ class Webhook
                         $tmp[$k] = $v;
                     }
                 }
-                Option::save('wunderlist_todo_store', $tmp, 'webhooks');
+                Option::save('wp_wunderlist_store.webhooks', $tmp);
             }
         }
         catch(Exception $e)
@@ -172,7 +172,7 @@ class Webhook
         try
         {
             $this->plugin->api->deleteWebhooks();
-            Option::unsetByPath('wunderlist_todo_store', 'webhooks');
+            Option::delete('wp_wunderlist_store.webhooks');
             $this->tokenize();
         }
         catch(Exception $e)

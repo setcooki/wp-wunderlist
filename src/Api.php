@@ -16,6 +16,8 @@ class Api
     const API_ACCESS_TOKEN_URL      = 'API_ACCESS_TOKEN_URL';
     const CURL_HANDLE               = 'CURL_HANDLE';
     const AUTO_RESET                = 'AUTO_RESET';
+    const PROXY_HOST                = 'PROXY_HOST';
+    const PROXY_PORT                = 'PROXY_PORT';
 
     /**
      * @var null
@@ -52,7 +54,7 @@ class Api
      */
     public $options = array
     (
-        self::API_VERSION           => null,
+        self::API_VERSION           => 'v1',
         self::AUTO_RESET            => false
     );
 
@@ -66,10 +68,6 @@ class Api
         if(setcooki_has_option(self::CURL_HANDLE, $this))
         {
             $this->curl = setcooki_get_option(self::CURL_HANDLE, $this);
-        }
-        if(setcooki_has_option(self::API_VERSION, $this, true))
-        {
-            setcooki_set_option(self::API_VERSION, 'v' . (int)WUNDERLIST_TODO__API_VERSION, $this);
         }
     }
 
@@ -546,6 +544,7 @@ class Api
         {
             $url = trim(setcooki_get_option(self::API_URL, $this), ' /') . '/api/' . setcooki_get_option(self::API_VERSION, $this) . '/' . ltrim($url, ' /');
         }
+
         curl_setopt($this->curl, CURLOPT_URL, $url);
         curl_setopt($this->curl, CURLOPT_HEADER, false);
 
@@ -554,6 +553,12 @@ class Api
         {
             $headers[] = 'X-Client-ID: ' . $this->id;
             $headers[] = 'X-Access-Token: ' . $this->token;
+        }
+
+        if(setcooki_has_option(self::PROXY_HOST, $this) && setcooki_get_option(self::PROXY_PORT, $this))
+        {
+            curl_setopt($this->curl, CURLOPT_PROXY, setcooki_get_option(self::PROXY_HOST, $this));
+            curl_setopt($this->curl, CURLOPT_PROXYPORT, setcooki_get_option(self::PROXY_PORT, $this));
         }
 
         if($data !== null)

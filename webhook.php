@@ -5,12 +5,6 @@ ini_set('display_errors', 1);
 
 require_once dirname(__FILE__) . '/boot.php';
 
-/*ob_start();
-print_r(json_decode($GLOBALS['HTTP_RAW_POST_DATA']));
-$o = ob_get_contents();
-ob_end_clean();
-file_put_contents("/var/www/vhosts/cooki.me/subdomain/start/wp-content/plugins/wunderlist-todo/cache/hooks.log", "$o\n", FILE_APPEND);*/
-
 if(strtolower(trim($_SERVER['REQUEST_METHOD'])) === 'post' && isset($_REQUEST['token']) && isset($_REQUEST['notify']))
 {
     try
@@ -40,13 +34,13 @@ if(strtolower(trim($_SERVER['REQUEST_METHOD'])) === 'post' && isset($_REQUEST['t
                     //execute webhook
                     if(isset($options['live']['enabled']) && (int)$options['live']['enabled'] === 1)
                     {
-                        $host = (isset($options['live']['host'])) ? trim((string)$options['live']['host']) : setcooki_config('wunderlist', 'socket.client.default.host');
-                        $port = (isset($options['live']['port'])) ? (int)$options['live']['port'] : setcooki_config('wunderlist', 'socket.client.default.port');
+                        $host = (isset($options['live']['host'])) ? trim((string)$options['live']['host']) : setcooki_config('socket.client.default.host');
+                        $port = (isset($options['live']['port'])) ? (int)$options['live']['port'] : setcooki_config('socket.client.default.port');
 
-                        $websocket = new Setcooki\Wunderlist\Todo\Websocket($host, $port);
+                        $websocket = new Setcooki\Wp\Wunderlist\Websocket($host, $port);
                         $websocket->connect();
                         $websocket->handshake();
-                        $websocket->emit('trigger', Setcooki\Wunderlist\Todo\Webhook::compile($action, $data, array('parent' => $parent, 'id' => $id)));
+                        $websocket->emit('trigger', Setcooki\Wp\Wunderlist\Webhook::compile($action, $data, array('parent' => $parent, 'id' => $id)));
                         $websocket->close();
                     }
                 }else{

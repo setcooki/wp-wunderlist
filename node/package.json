@@ -1,9 +1,9 @@
 {
-    "name": "wunderlist-todo-socket",
+    "name": "wp-wunderlist-socket",
     "author": "setcookie <set@cooki.me>",
     "version": "0.0.1",
-    "license": "MIT",
-    "description": "wunderlist todo socket server",
+    "license": "GPL",
+    "description": "wp wunderlist socket server",
     "repository" : {},
     "dependencies": {
         "express": ">= 4.x.x",

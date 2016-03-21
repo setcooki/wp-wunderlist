@@ -11,15 +11,16 @@
             wunderlist.config = c || {};
             wunderlist.debug('app.init');
 
-            var incCount = 0;
+            var cnt = 0;
             var inc = [
                 '/static/js/lib/api.js',
                 '/static/js/lib/action.js',
+                '/static/js/lib/poll.js',
                 '/static/js/lib/socket.js'
             ];
             $.each(inc, function(i, v){
                 $.when($.getScript(wunderlist.conf('base') + v)).done(function(e){
-                    if((incCount += 1) == inc.length){
+                    if((cnt += 1) == inc.length){
                         wunderlist.call('options', null, app.run);
                     }
                 }).fail(function(e){
@@ -30,11 +31,10 @@
 
         /**
          * run app
-         * @param o expects plugin options.json
+         * @param options expects plugin options.json
          */
-        run: function(o)
+        run: function(options)
         {
-            wunderlist.debug('app.run');
             $(wunderlist.conf('css.taskRoot') + " [data-type='enter']").keyup(function(e){
                 if(e.keyCode == 13){
                     wunderlist.Action.trigger(e);
@@ -44,13 +44,17 @@
                 wunderlist.Action.trigger(e);
             });
 
-            if(o.live.enabled && parseInt(o.live.enabled) === 1){
+            if(options.live.mode && options.live.mode != 'none'){
                 try {
-                    var socket = new WunderlistSocket({
-                        host: o.live.host,
-                        port: o.live.port
-                    });
-                    socket.run();
+                    if(options.live.mode == 'poll'){
+                        wunderlist.Poll.run(options.live.poll.interval || 5000);
+                    }else{
+                        var socket = new WunderlistSocket({
+                            host: options.live.push.host,
+                            port: options.live.push.port
+                        });
+                        socket.run();
+                    }
                 }catch(e){}
             }
         },
@@ -137,7 +141,7 @@
     };
 
     if($ && wunderlistConf){
-        $(document).ready(function(e){
+        $(document).ready(function(){
             app.init(wunderlistConf);
         });
     }

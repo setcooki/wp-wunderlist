@@ -1,6 +1,6 @@
 <?php
 
-namespace Setcooki\Wp\Wunderlist;
+namespace Setcooki\Wp\Wunderlist\View;
 
 use Setcooki\Wp\Template;
 use Setcooki\Wp\View;
