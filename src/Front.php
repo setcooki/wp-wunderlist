@@ -121,7 +121,7 @@ class Front
                 {
                     try
                     {
-                        $css    = setcooki_path('plugin') . '/static/css/wp-wunderlist.min.css';
+                        $css    = setcooki_path('plugin') . '/var/wp-wunderlist.min.css';
                         $style  = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($style, DIRECTORY_SEPARATOR);
                         $theme  = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($theme, DIRECTORY_SEPARATOR);
                         if(!file_exists($css) || (file_exists($css) && ((int)@filemtime($style) > (int)@filemtime($css)) || ((int)@filemtime($theme) > (int)@filemtime($css))))
@@ -130,9 +130,9 @@ class Front
                             $parser->SetImportDirs(array(setcooki_path('plugin') . '/static/less/' => setcooki_path('plugin', true) . '/static/less/') );
                             $parser->parse((string)file_get_contents($theme));
                             $parser->parse((string)file_get_contents($style));
-                            file_put_contents(setcooki_path('plugin') . '/static/css//wp-wunderlist.min.css', $parser->getCss());
+                            file_put_contents(setcooki_path('plugin') . '/var/wp-wunderlist.min.css', $parser->getCss());
                         }
-                        $style = setcooki_path('plugin', true) . '/static/css/wp-wunderlist.min.css';
+                        $style = setcooki_path('plugin', true) . '/var/wp-wunderlist.min.css';
                     }
                     catch(\Exception $e)
                     {
