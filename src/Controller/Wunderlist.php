@@ -35,8 +35,6 @@ class Wunderlist extends Front
 	 */
 	public function render(Params $params)
 	{
-		$front = $this->wp->front;
-
 		try
 		{
 			if($params->is('id'))
@@ -48,62 +46,38 @@ class Wunderlist extends Front
 					{
 				        $this->wp->webhook->create($id, 'list');
 					}
-                    if($params->has('view'))
-                    {
-	                    if(stripos($params->get('view'), DIRECTORY_SEPARATOR) !== false)
-	                    {
-		                    $view = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('view'), DIRECTORY_SEPARATOR);
-	                    }else{
 
-	                    }
-                    }else{
-                        $view = rtrim(setcooki_get_option('VIEW_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR  . 'Standard.php';
-                    }
-                    if($params->has('template'))
+					$view       = apply_filters('wp_wunderlist_view', $this->getView($params));
+                    $template   = apply_filters('wp_wunderlist_template', $this->getTemplate($params));
+
+                    require_once $view;
+                    $view = basename($view, '.php');
+
+                    if(class_exists($view))
                     {
-                        $template = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($params->get('template'), DIRECTORY_SEPARATOR);
+                        if(stristr($template, '.mustache') !== false)
+                        {
+                            $options = array
+                            (
+                                'loader' => new \Mustache_Loader_FilesystemLoader(dirname($template)),
+                            );
+                            $view = new $view($this, new \Mustache_Engine($options));
+                            $view->execute((array)$params);
+                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
+                            $template = $view->view->loadTemplate('index');
+                            return $template->render($vars);
+                        }else{
+                            $view = new $view($this);
+                            $view->execute((array)$params);
+                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
+                            extract($vars);
+                            ob_start();
+                            require $template;
+                            return ob_get_clean();
+                        }
                     }else{
-                        $template = rtrim(setcooki_get_option('TEMPLATE_PATH', $front), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'standard' . DIRECTORY_SEPARATOR . 'list.mustache';
+						throw new Exception("view class not found");
                     }
-					$view = apply_filters('wp_wunderlist_view', $view);
-                    $template = apply_filters('wp_wunderlist_template', $template);
-                    if(is_file($view))
-                    {
-	                    if(is_file($template))
-	                    {
-	                        require_once $view;
-	                        $view = basename($view, '.php');
-	                        if(class_exists($view))
-	                        {
-	                            if(stristr($template, '.mustache') !== false)
-	                            {
-	                                $options = array
-	                                (
-	                                    'loader' => new \Mustache_Loader_FilesystemLoader(dirname($template)),
-	                                );
-	                                $view = new $view($this, new \Mustache_Engine($options));
-	                                $view->execute((array)$params);
-		                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
-		                            $template = $view->view->loadTemplate('list');
-		                            return $template->render($vars);
-	                            }else{
-	                                $view = new $view($this);
-	                                $view->execute((array)$params);
-		                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
-		                            extract($vars);
-		                            ob_start();
-		                            require $template;
-		                       		return ob_get_clean();
-	                            }
-	                        }else{
-								throw new Exception("view class not found");
-	                        }
-	                    }else{
-	                        throw new Exception("template not found");
-	                    }
-	                }else{
-	                    throw new Exception("view file not found");
-	                }
 				}else{
 					throw new Exception("not in whitelist");
 				}
@@ -133,5 +107,73 @@ class Wunderlist extends Front
 			$whitelist = array();
 		}
 		return (in_array($id, $whitelist)) ? true : false;
+	}
+
+
+	/**
+	 * @param Params $params
+	 * @return string
+	 * @throws Exception
+	 */
+	protected function getView(Params $params)
+	{
+		$root = rtrim(setcooki_path('root'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+ 		$path = rtrim(setcooki_get_option('VIEW_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+		if($params->has('view'))
+		{
+			if(stripos($params->get('view'), DIRECTORY_SEPARATOR) !== false)
+            {
+                $view = $root . trim($params->get('view'), ' ' . DIRECTORY_SEPARATOR);
+            }else{
+				$view = $root . $path . trim($params->get('view'), ' ' . DIRECTORY_SEPARATOR);
+            }
+		}else{
+			if(Option::has('wp_wunderlist_options.list.default_view', true))
+			{
+				$view = $root . ltrim(Option::get('wp_wunderlist_options.list.default_view'), DIRECTORY_SEPARATOR);
+			}else{
+				$view = $root . $path . 'Standard.php';
+			}
+		}
+		if(is_file($view))
+		{
+			return $view;
+		}else{
+			throw new Exception("shit");
+		}
+	}
+
+
+	/**
+	 * @param Params $params
+	 *
+	 * @return string
+	 * @throws Exception
+	 */
+	protected function getTemplate(Params $params)
+	{
+		$root = rtrim(setcooki_path('root'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$path = rtrim(setcooki_get_option('TEMPLATE_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+		if($params->has('template'))
+        {
+	        if(stripos($params->get('template'), DIRECTORY_SEPARATOR) !== false)
+	        {
+	            $template = $root . trim($params->get('template'), ' ' . DIRECTORY_SEPARATOR);
+	        }else if(stripos($params->get('template'), '.') !== false){
+	     	    $template = $root . $path . trim($params->get('template'), ' ' . DIRECTORY_SEPARATOR);
+	        }else{
+		        $template = $root . $path . trim($params->get('template'), ' ' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'index.mustache';
+	        }
+        }else{
+			$template = $root . $path . strtolower(basename($this->getView($params), PHP_EXT)) . DIRECTORY_SEPARATOR . 'index.mustache';
+        }
+		if(is_file($template))
+		{
+			return $template;
+		}else{
+			throw new Exception("fuck");
+		}
 	}
 }

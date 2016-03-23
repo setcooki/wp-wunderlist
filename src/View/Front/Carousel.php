@@ -20,6 +20,6 @@ class Carousel extends View
     */
     public function compile(Params $params)
     {
-	    
+
     }
 }

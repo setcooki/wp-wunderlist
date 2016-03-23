@@ -50,17 +50,13 @@ class Front
     {
         setcooki_init_options($options, $this);
         $this->plugin = $plugin;
-        if(setcooki_has_option(self::TEMPLATE_PATH, $this, true))
+        if(!setcooki_has_option(self::TEMPLATE_PATH, $this, true))
         {
-            setcooki_set_option(self::TEMPLATE_PATH, setcooki_path('root') . DIRECTORY_SEPARATOR . trim(setcooki_get_option(self::TEMPLATE_PATH, $this), DIRECTORY_SEPARATOR), $this);
-        }else{
-            setcooki_set_option(self::TEMPLATE_PATH, setcooki_path('plugin') . '/templates/front', $this);
+            setcooki_set_option(self::TEMPLATE_PATH, setcooki_path('plugin', true) . '/templates/front', $this);
         }
-        if(setcooki_has_option(self::VIEW_PATH, $this, true))
+        if(!setcooki_has_option(self::VIEW_PATH, $this, true))
         {
-            setcooki_set_option(self::VIEW_PATH, setcooki_path('root') . DIRECTORY_SEPARATOR . trim(setcooki_get_option(self::VIEW_PATH, $this), DIRECTORY_SEPARATOR), $this);
-        }else{
-            setcooki_set_option(self::VIEW_PATH, setcooki_path('plugin') . '/views/front', $this);
+            setcooki_set_option(self::VIEW_PATH, setcooki_path('plugin', true) . '/views/front', $this);
         }
         if(!setcooki_has_option(self::PRIMARY_STYLES, $this, true))
         {

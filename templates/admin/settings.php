@@ -29,7 +29,7 @@ $admin_log                  = (array_key_exists('admin', $options) && isset($opt
 if(setcooki_has_option('VIEW_PATH', $this->wp->front, true))
 {
     $path = rtrim(setcooki_get_option('VIEW_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-    foreach((array)@glob($path . '*.php') as $view)
+    foreach((array)@glob(setcooki_path('root') . $path . '*.php') as $view)
     {
         $views[$path . basename($view)] = basename($view, '.php');
     }
