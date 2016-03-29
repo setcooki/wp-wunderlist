@@ -63,7 +63,12 @@ return array
             'PRIMARY_STYLES' => null,
             'THEME_PATH' => null,
             'THEME_CUSTOM_PATH' => null,
-            'CUSTOM_STYLES' => null
+            'CUSTOM_STYLES' => null,
+            'STYLE_INCLUDES' => array
+            (
+                setcooki_path('plugin', true) . '/static/less/includes/media.less',
+                setcooki_path('plugin', true) . '/static/less/includes/responsive.less'
+            )
         )
     ),
     'socket' => array
@@ -83,8 +88,18 @@ return array
         'conf' => array
         (
             'dev' => (int)(bool)SETCOOKI_DEV,
-            'base' => setcooki_path('plugin', true),
             'debug' => (int)SETCOOKI_DEV,
+            'ajax' => array
+            (
+                'url' => admin_url('admin-ajax.php')
+            ),
+            'deps' => array
+            (
+                'lib/api.js',
+                'lib/action.js',
+                'lib/poll.js',
+                'lib/socket.js'
+            ),
             'css' => array
             (
                 'listRoot' => '.wpwl-list',

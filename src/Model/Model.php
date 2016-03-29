@@ -2,7 +2,6 @@
 
 namespace Setcooki\Wp\Wunderlist\Model;
 
-use Setcooki\Wp\Wunderlist\Api;
 use Setcooki\Wp\Wunderlist\Entity\Entity;
 use Setcooki\Wp\Wunderlist\Exception;
 

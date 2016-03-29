@@ -1,6 +1,8 @@
 <?php
 
-namespace Setcooki\Wp\Wunderlist;
+namespace Setcooki\Wp\Wunderlist\Wunderlist;
+
+use Setcooki\Wp\Wunderlist\Exception;
 
 class Api
 {
@@ -522,6 +524,23 @@ class Api
             }
         }
         catch(\Exception $e){}
+    }
+
+
+    /**
+     * @param $id
+     * @param string $for
+     * @return array|mixed
+     * @throws Exception
+     */
+    public function getFiles($id, $for = 'list')
+    {
+        if(strtolower(trim($for)) == 'task')
+        {
+            return $this->call("/files?task_id=$id");
+        }else{
+            return $this->call("/files?list_id=$id");
+        }
     }
 
 

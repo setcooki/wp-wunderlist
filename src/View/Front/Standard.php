@@ -22,28 +22,17 @@ class Standard extends View
     {
         $options = Option::get('wp_wunderlist_options', array());
 
-        if($params->has('id'));
+        if(array_key_exists('list', $options) && isset($options['list']['title_wrapper']) && !empty($options['list']['title_wrapper']))
         {
-            $id = (int)$params->get('id');
-            if($params->get('cache'))
-            {
-                if(($cache = setcooki_cache("list:$id")) === false)
-                {
-                    $list = Model::getModel('Wunderlist')->get($id);
-                    setcooki_cache("list:$id", $list, (($params->is('cache')) ? (int)$params->get('cache') : (int)setcooki_config('api.cache.lifetime')));
-                    $this->assign('list', $list);
-                }else{
-                    $this->assign('list', $cache);
-                }
-            }else{
-                $this->assign('list', Model::getModel('Wunderlist')->get($id));
-            }
-            if(array_key_exists('list', $options) && isset($options['list']['title_wrapper']) && !empty($options['list']['title_wrapper']))
-            {
-                $this->assign('title_wrapper', trim($options['list']['title_wrapper'], ' </\\\>'));
-            }else{
-                $this->assign('title_wrapper', 'div');
-            }
+            $this->assign('list_title_wrapper', trim($options['list']['title_wrapper'], ' </\\\>'));
+        }else{
+            $this->assign('list_title_wrapper', 'div');
+        }
+        if(array_key_exists('task', $options) && isset($options['task']['title_wrapper']) && !empty($options['task']['title_wrapper']))
+        {
+            $this->assign('task_title_wrapper', trim($options['task']['title_wrapper'], ' </\\\>'));
+        }else{
+            $this->assign('task_title_wrapper', 'div');
         }
     }
 }

@@ -18,6 +18,7 @@ class Front
     const TEMPLATE_PATH             = 'TEMPLATE_PATH';
     const VIEW_PATH                 = 'VIEW_PATH';
     const PRIMARY_STYLES            = 'PRIMARY_STYLES';
+    const STYLE_INCLUDES            = 'STYLE_INCLUDES';
     const THEME_PATH                = 'THEME_PATH';
     const THEME_CUSTOM_PATH         = 'THEME_CUSTOM_PATH';
     const CUSTOM_STYLES             = 'CUSTOM_STYLES';
@@ -110,7 +111,7 @@ class Front
             }
             if((int)Option::get('wp_wunderlist_options.css.enabled'))
             {
-                $style = setcooki_get_option('PRIMARY_STYLES', $self);
+                $style = setcooki_get_option(self::PRIMARY_STYLES, $self);
                 $style = apply_filters('wp_wunderlist_style', $style);
                 $theme = (string)Option::get('wp_wunderlist_options.css.theme', '');
                 if(stripos($style, '.less') !== false)
@@ -120,13 +121,27 @@ class Front
                         $css    = setcooki_path('plugin') . '/var/wp-wunderlist.min.css';
                         $style  = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($style, DIRECTORY_SEPARATOR);
                         $theme  = setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($theme, DIRECTORY_SEPARATOR);
-                        if(!file_exists($css) || (file_exists($css) && ((int)@filemtime($style) > (int)@filemtime($css)) || ((int)@filemtime($theme) > (int)@filemtime($css))))
+                        if(SETCOOKI_DEV || !file_exists($css) || (file_exists($css) && ((int)@filemtime($style) > (int)@filemtime($css)) || ((int)@filemtime($theme) > (int)@filemtime($css))))
                         {
-                            $parser = new \Less_Parser(array('compress' => true));
+                            $options = array
+                            (
+                                'compress' => (SETCOOKI_DEV) ? false : true
+                            );
+                            $parser = new \Less_Parser($options);
                             $parser->SetImportDirs(array(setcooki_path('plugin') . '/static/less/' => setcooki_path('plugin', true) . '/static/less/') );
                             $parser->parse((string)file_get_contents($theme));
                             $parser->parse((string)file_get_contents($style));
-                            file_put_contents(setcooki_path('plugin') . '/var/wp-wunderlist.min.css', $parser->getCss());
+                            if(setcooki_has_option(self::STYLE_INCLUDES, $self))
+                            {
+                                foreach((array)setcooki_get_option(self::STYLE_INCLUDES, $self) as $s)
+                                {
+                                    $parser->parse((string)file_get_contents(setcooki_path('root') . DIRECTORY_SEPARATOR . ltrim($s, DIRECTORY_SEPARATOR)));
+                                }
+                            }
+                            if(!file_put_contents(setcooki_path('plugin') . '/var/wp-wunderlist.min.css', $parser->getCss()))
+                            {
+                                //log
+                            }
                         }
                         $style = setcooki_path('plugin', true) . '/var/wp-wunderlist.min.css';
                     }
@@ -146,13 +161,11 @@ class Front
             }
             if(SETCOOKI_DEV)
             {
-                $js = setcooki_path('plugin', true) . '/static/js/app.js';
+                $js = setcooki_path('plugin', true) . '/static/js/wp-wunderlist.js?nonce=' . wp_create_nonce('wp-wunderlist');
             }else{
-                $js = setcooki_path('plugin', true) . '/static/js/wp-wunderlist.min.js';
+                $js = setcooki_path('plugin', true) . '/static/js/wp-wunderlist.min.js?nonce=' . wp_create_nonce('wp-wunderlist');
             }
             wp_register_script('wunderlist', $js, array('jquery', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-mouse', 'jquery-ui-sortable'), '1.0.0', false);
-            wp_localize_script('wunderlist', 'wunderlistAjax', array('url' => admin_url('admin-ajax.php'), 'nonce' => wp_create_nonce(wunderlist_nonce())));
-            wp_localize_script('wunderlist', 'wunderlistConf', setcooki_config('js.conf'));
             wp_enqueue_script('wunderlist');
         });
     }

@@ -5,15 +5,15 @@
         var self = this;
         self.getList = function(id)
         {
-            return $(wunderlist.conf('css.listRoot') + '[data-id="' + id + '"]');
+            return $(wunderlist._config('css.listRoot') + '[data-id="' + id + '"]');
         };
         self.getTask = function(list_id, task_id)
         {
-            return $(self.getList(list_id)).find(wunderlist.conf('css.taskRoot') + '[data-id="' + task_id + '"]');
+            return $(self.getList(list_id)).find(wunderlist._config('css.taskRoot') + '[data-id="' + task_id + '"]');
         };
         self.getNote = function(list_id, note_id)
         {
-            return $(self.getList(list_id)).find(wunderlist.conf('css.noteRoot') + '[data-id="' + note_id + '"]');
+            return $(self.getList(list_id)).find(wunderlist._config('css.noteRoot') + '[data-id="' + note_id + '"]');
         };
         self.setValue = function(e, value)
         {
@@ -37,7 +37,7 @@
             toggleNote: function(e){
                 var data = $(e.currentTarget).data();
                 if('toggle' in data){
-                    var toggle = $(e.currentTarget).closest(wunderlist.conf('css.taskRoot')).find(data.toggle);
+                    var toggle = $(e.currentTarget).closest(wunderlist._config('css.taskRoot')).find(data.toggle);
                     $(toggle).toggle(100);
                 }
             }
@@ -58,7 +58,7 @@
             call: function(action, data, params)
             {
                 if(action && action in wunderlist.Action){
-                    wunderlist.Api.call(action, data || null, wunderlist.Action[action], params || null);
+                    wunderlist.Api._call(action, data || null, wunderlist.Action[action], params || null);
                 }
             }
         };

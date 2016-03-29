@@ -23,26 +23,26 @@
          */
         run: function()
         {
-            wunderlist.debug('socket.run');
+            wunderlist._debug('socket.run');
 
             var self = this;
             var host = this.options.host || window.location.protocol + '//' + window.location.host;
             var port = this.options.port || 7777;
             var socket = io.connect(host + ':' + port, {'connect timeout': 1000, 'force new connection': true});
             socket.on('connect', function(e){
-                wunderlist.debug('socket.connected');
+                wunderlist._debug('socket.connected');
             });
             socket.on('webhook', function(data){
                 self.call(data);
             });
             socket.on('error', function(e){
-                wunderlist.error('socket error with: {0}', [e.message]);
+                wunderlist._error('socket error with: {0}', [e.message]);
             });
             socket.on('disconnect', function(e){
-                wunderlist.debug('socket.disconnected');
+                wunderlist._debug('socket.disconnected');
             });
             socket.on('connect_error', function(e){
-                //wunderlist.error('socket error with: {0}', [e.message]);
+                //wunderlist._error('socket error with: {0}', [e.message]);
             });
         },
 
@@ -61,7 +61,7 @@
                 }
             }
             catch(e){
-                  wunderlist.error('socket response webhook error: {0}', [e.message]);
+                  wunderlist._error('socket response webhook error: {0}', [e.message]);
             }
         }
     });

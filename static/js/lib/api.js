@@ -14,7 +14,7 @@
             {
                 if(action){
                     data = data || {};
-                    wunderlist.call('api', {
+                    wunderlist._call('api', {
                         action: action,
                         data: data
                     }, callback || null, callbackParams || null);

@@ -49,11 +49,11 @@ class Wunderlist extends Front
 
 					$view       = apply_filters('wp_wunderlist_view', $this->getView($params));
                     $template   = apply_filters('wp_wunderlist_template', $this->getTemplate($params));
+					$class      = basename($view, '.php');
 
                     require_once $view;
-                    $view = basename($view, '.php');
 
-                    if(class_exists($view))
+                    if(class_exists($class))
                     {
                         if(stristr($template, '.mustache') !== false)
                         {
@@ -61,19 +61,27 @@ class Wunderlist extends Front
                             (
                                 'loader' => new \Mustache_Loader_FilesystemLoader(dirname($template)),
                             );
-                            $view = new $view($this, new \Mustache_Engine($options));
-                            $view->execute((array)$params);
-                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
-                            $template = $view->view->loadTemplate('index');
-                            return $template->render($vars);
+                            $view = new $class($this, new \Mustache_Engine($options));
+                            if($view->execute((array)$params) !== false)
+                            {
+	                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
+	                            $template = $view->view->loadTemplate('index');
+	                            return $template->render($vars);
+                            }else{
+	                            return '';
+                            }
                         }else{
-                            $view = new $view($this);
-                            $view->execute((array)$params);
-                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
-                            extract($vars);
-                            ob_start();
-                            require $template;
-                            return ob_get_clean();
+                            $view = new $class($this);
+                            if($view->execute((array)$params) !== false)
+                            {
+	                            $vars = apply_filters('wp_wunderlist_vars', $view->vars());
+	                            extract($vars);
+	                            ob_start();
+	                            require $template;
+	                            return ob_get_clean();
+                            }else{
+	                            return '';
+                            }
                         }
                     }else{
 						throw new Exception("view class not found");

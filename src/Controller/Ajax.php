@@ -23,7 +23,7 @@ class Ajax extends Controller
 		try
 		{
 			$params = new Params($request->getParams());
-			if(!$params->is('nonce') || !wp_verify_nonce($params->get('nonce'), wunderlist_nonce()))
+			if(!$params->is('nonce') || !wp_verify_nonce($params->get('nonce'), 'wp-wunderlist'))
 			{
 				throw new Exception('missing or non matching ajax nonce');
 			}

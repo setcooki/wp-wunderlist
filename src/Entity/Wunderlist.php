@@ -23,6 +23,6 @@ class Wunderlist extends Entity
 	 */
 	public function getTitle()
 	{
-		return setcooki_linkify($this->title, '_blank');
+		return wunderlist_linkify($this->title, '_blank');
 	}
 }

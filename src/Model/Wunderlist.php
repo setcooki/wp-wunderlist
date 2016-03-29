@@ -2,6 +2,7 @@
 
 namespace Setcooki\Wp\Wunderlist\Model;
 
+use Setcooki\Wp\Wunderlist\Entity\File;
 use Setcooki\Wp\Wunderlist\Entity\Note;
 use Setcooki\Wp\Wunderlist\Entity\Task;
 
@@ -24,6 +25,7 @@ class Wunderlist extends Model
 		$tasks      = $this->api()->getTasks($id);
 		$notes      = $this->api()->getNotes($id, 'list');
 		$positions  = $this->api()->getPositions($id);
+		$files      = $this->api()->getFiles($id);
 
 		$list = new $this->entity($list);
 
@@ -33,6 +35,13 @@ class Wunderlist extends Model
 		}
 		$notes = $tmp;
 		$tmp = array();
+		foreach($files as $val)
+		{
+			$tmp[(int)$val->task_id][] = new File($val);
+		}
+		$files = $tmp;
+		$tmp = array();
+
 		foreach($tasks as &$val)
 		{
 			$tmp[(int)$val->id] = new Task($val);
@@ -40,6 +49,15 @@ class Wunderlist extends Model
 			{
 				$tmp[(int)$val->id]->has_note = true;
 				$tmp[(int)$val->id]->note = $notes[$val->id];
+			}else{
+				$tmp[(int)$val->id]->has_note = false;
+			}
+			if(array_key_exists($val->id, $files))
+			{
+				$tmp[(int)$val->id]->has_files = true;
+				$tmp[(int)$val->id]->files = $files[$val->id];
+			}else{
+				$tmp[(int)$val->id]->has_files = false;
 			}
 		}
 		$tasks = $tmp;
@@ -48,10 +66,11 @@ class Wunderlist extends Model
 	    {
 	        $list->position_id = (int)$positions[0]->id;
 	        $list->position_revision = (int)$positions[0]->revision;
-	        foreach($positions[0]->values as $val)
+	        foreach($positions[0]->values as $key => $val)
 	        {
 	            if(array_key_exists((int)$val, $tasks))
 	            {
+		            $tasks[(int)$val]->position = $key + 1;
 					$tmp[] = $tasks[(int)$val];
 	            }
 	        }
@@ -62,6 +81,7 @@ class Wunderlist extends Model
 		unset($positions);
 		unset($tasks);
 		unset($notes);
+		unset($files);
 		unset($tmp);
 
 		return $list;

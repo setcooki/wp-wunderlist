@@ -28,7 +28,8 @@
     "php": ">=5.4",
     "setcooki/wp": "dev-dev",
     "mustache/mustache": "~2.5",
-    "oyejorge/less.php": "~1.7.0.9"
+    "oyejorge/less.php": "~1.7.0.9",
+    "dereuromark/media-embed": "0.2.3"
   },
   "autoload":{
     "psr-4": {

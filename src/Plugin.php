@@ -6,6 +6,7 @@ use Setcooki\Wp\Controller\Resolver;
 use Setcooki\Wp\Option;
 use Setcooki\Wp\Routing\Router;
 use Setcooki\Wp\Wunderlist\Model\Model;
+use Setcooki\Wp\Wunderlist\Wunderlist\Api;
 
 class Plugin extends \Setcooki\Wp\Plugin
 {
@@ -51,7 +52,7 @@ class Plugin extends \Setcooki\Wp\Plugin
     public function __construct($options = null)
     {
         parent::__construct($options);
-
+        
         $this->api      = new Api(setcooki_config('api.options'));
         $this->admin    = new Admin($this, setcooki_config('admin.options'));
         $this->front    = new Front($this, setcooki_config('front.options'));
@@ -106,6 +107,12 @@ class Plugin extends \Setcooki\Wp\Plugin
         if(!Option::has('wp_wunderlist_webhook_token'))
         {
             $this->webhook->tokenize();
+        }
+
+        //set config
+        if(!is_file(setcooki_path('plugin'). '/var/config.json'))
+        {
+            file_put_contents(setcooki_path('plugin'). '/var/config.json', json_encode(setcooki_config('js.conf')));
         }
 
         $this->admin->init();

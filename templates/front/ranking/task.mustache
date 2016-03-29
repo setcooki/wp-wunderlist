@@ -1,0 +1,21 @@
+<li>
+    <div id="wpwl-task-{{id}}" class="wpwl-task" rel="{{id}}" data-id="{{id}}" data-revision="{{revision}}" aria-label="{{title}}" draggable="">
+        <div class="wpwl-task-body">
+            <div class="wpwl-task-header">
+                <{{task_title_wrapper}} class="wpwl-task-title"><span>{{{position}}}</span>{{{title}}}</{{task_title_wrapper}}>
+            </div>
+            {{#hasBanner}}
+                <div class="wpwl-task-banner">
+                    {{{getBanner}}}
+                </div>
+            {{/hasBanner}}
+            <div class="wpwl-task-content">
+                {{#hasNote}}
+                    <div class="wpwl-task-note">
+                        {{{getNote}}}
+                    </div>
+                {{/hasNote}}
+            </div>
+        </div>
+    </div>
+</li>

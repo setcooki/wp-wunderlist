@@ -1,21 +1,10 @@
 module.exports = function(grunt)
 {
-    var js = [
-        'static/js/app.js',
-        'static/js/lib/action.js',
-        'static/js/lib/api.js',
-        'static/js/lib/socket.js'
-    ];
-
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
-        concat: {
-            options: {
-                separator: '\n',
-                sourceMap: false
-            },
-            dist: {
-                src: js,
+        copy: {
+            dist:{
+                src: 'static/js/app.js',
                 dest: 'static/js/wp-wunderlist.js'
             }
         },
@@ -41,7 +30,7 @@ module.exports = function(grunt)
                     'static/js/*.js',
                     'static/js/**/*.js'
                 ],
-                tasks: ['uglify']
+                tasks: ['copy', 'uglify']
             }
         }
     });
@@ -55,5 +44,5 @@ module.exports = function(grunt)
     grunt.loadNpmTasks("grunt-contrib-jshint");
 
     grunt.registerTask("live", ["watch"]);
-    grunt.registerTask("build", ["uglify", "watch"]);
+    grunt.registerTask("build", ["copy", "uglify", "watch"]);
 };

@@ -1,32 +1,41 @@
 (function($, wunderlist)
 {
+    var nonce = null;
     var app =
     {
         /**
          * init app loading external scripts and options
-         * @param c expects wunderlist config object
          */
-        init: function(c)
+        init: function()
         {
-            wunderlist.config = c || {};
-            wunderlist.debug('app.init');
-
+            //wunderlist.debug('app.init');
             var cnt = 0;
-            var inc = [
-                '/static/js/lib/api.js',
-                '/static/js/lib/action.js',
-                '/static/js/lib/poll.js',
-                '/static/js/lib/socket.js'
-            ];
-            $.each(inc, function(i, v){
-                $.when($.getScript(wunderlist.conf('base') + v)).done(function(e){
-                    if((cnt += 1) == inc.length){
-                        wunderlist.call('options', null, app.run);
-                    }
-                }).fail(function(e){
-                    wunderlist.error('failed to include: {0}', [v]);
-                });
-            });
+            var loc = app.location();
+            if(loc){
+                if('nonce' in loc.params){
+                    nonce = loc.params.nonce;
+                    $.when($.getJSON(loc.url + '/../../../var/config.json')).done(function(c){
+                        wunderlist.config = c || {};
+                        if(wunderlist.config.deps){
+                            $.each(wunderlist.config.deps, function(i, v){
+                                $.when($.getScript(loc.url + v)).done(function(){
+                                    if((cnt += 1) == wunderlist.config.deps.length){
+                                        wunderlist._call('options', null, app.run);
+                                    }
+                                }).fail(function(e){
+                                    wunderlist._error('failed to include: {0}', [v]);
+                                });
+                            });
+                        }else{
+                            wunderlist._call('options', null, app.run);
+                        }
+                    });
+                }else{
+                    //major error
+                }
+            }else{
+                //major error
+            }
         },
 
         /**
@@ -67,7 +76,7 @@
          */
         log: function(msg, vars, level)
         {
-            var l = parseInt(wunderlist.conf('debug'));
+            var l = parseInt(wunderlist._config('debug'));
             if(l > 0){
                 if(level > l) return;
                 vars = vars || [];
@@ -78,10 +87,36 @@
                 }
                 console.log(msg);
             }
+        },
+
+        /**
+         *
+         */
+        location: function()
+        {
+            var location = null, match = null, params = {};
+            var scripts = $('script');
+            if(scripts && scripts.length > 0){
+                $.each(scripts, function(){
+                    if(this.src && (match = this.src.match(new RegExp('(.*)wp-wunderlist\\.(?:min\\.)?js\\?(.*)$'))) !== null){
+                        if(match.length >= 3 && match[2] != ''){
+                            $.each(match[2].split('&'), function(i,v){
+                                v = v.split('=');
+                                params[decodeURIComponent(v[0])] = decodeURIComponent(v[1]);
+                            })
+                        }
+                        location = {
+                            'url': match[1],
+                            'params': params
+                        };
+                    }
+                });
+            }
+            return location;
         }
     };
 
-    wunderlist.call = function(call, data, callback, callbackParams, ajaxParams)
+    wunderlist._call = function(call, data, callback, callbackParams, ajaxParams)
     {
         try
         {
@@ -89,14 +124,14 @@
             d.call = call;
             d.data = data || null;
             d.action = 'wunderlist_ajax';
-            d.nonce = wunderlistAjax.nonce || null;
+            d.nonce = nonce;
             callback = callback || null;
             callbackParams = callbackParams || null;
             ajaxParams = ajaxParams || {};
             $.ajax({
                 type: ajaxParams.method || 'post',
                 dataType: ajaxParams.dataType || 'json',
-                url: ajaxParams.url || wunderlistAjax.url,
+                url: ajaxParams.url || wunderlist._config('ajax.url'),
                 data: d,
                 success: function(response){
                     if(response && !response.error){
@@ -104,31 +139,31 @@
                             callback(response, callbackParams);
                         }
                     }else if(response && response.error){
-                        wunderlist.error('ajax response failed with: {0}', [response.error]);
+                        wunderlist._error('ajax response failed with: {0}', [response.error]);
                     }else{
-                        wunderlist.error('ajax response is empty');
+                        wunderlist._error('ajax response is empty');
                     }
                 },
                 error: function(o, s, t){
-                    wunderlist.error('ajax call failed with: {0}', [t]);
+                    wunderlist._error('ajax call failed with: {0}', [t]);
                 }
             });
         }catch(e){
-            wunderlist.error('ajax call fails with exception: {0}', [e.message]);
+            wunderlist._error('ajax call fails with exception: {0}', [e.message]);
         }
     };
 
-    wunderlist.error = function(msg, vars)
+    wunderlist._error = function(msg, vars)
     {
         app.log(msg, vars, 1);
     };
 
-    wunderlist.debug = function(msg, vars)
+    wunderlist._debug = function(msg, vars)
     {
         app.log(msg, vars, 2);
     };
 
-    wunderlist.conf = function(key, value)
+    wunderlist._config = function(key, value)
     {
         if(key.indexOf('.') == -1){
             if(value != undefined){
@@ -140,9 +175,9 @@
         }
     };
 
-    if($ && wunderlistConf){
+    if($){
         $(document).ready(function(){
-            app.init(wunderlistConf);
+            app.init();
         });
     }
 })(jQuery || null, wunderlist = {});

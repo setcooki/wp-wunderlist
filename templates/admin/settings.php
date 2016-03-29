@@ -18,9 +18,11 @@ $security_whitelist         = (array_key_exists('security', $options) && isset($
 $list_default_view          = (array_key_exists('list', $options) && isset($options['list']['default_view'])) ? $options['list']['default_view'] : rtrim(setcooki_get_option('VIEW_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'Standard.php';
 $list_show_title            = (array_key_exists('list', $options) && isset($options['list']['show_title']));
 $list_title_wrapper         = (array_key_exists('list', $options) && isset($options['list']['title_wrapper'])) ? trim($options['list']['title_wrapper']) : '';
+$list_task_limit             = (array_key_exists('list', $options) && isset($options['list']['task_limit'])) ? trim($options['list']['task_limit']) : '';
 $task_show_starred          = (array_key_exists('task', $options) && isset($options['task']['show_starred']));
 $task_show_note             = (array_key_exists('task', $options) && isset($options['task']['show_note']));
 $task_note_collapse         = (array_key_exists('task', $options) && isset($options['task']['note_collapse']));
+$task_title_wrapper         = (array_key_exists('task', $options) && isset($options['task']['title_wrapper'])) ? trim($options['task']['title_wrapper']) : '';
 $css_enabled                = (array_key_exists('css', $options) && isset($options['css']['enabled']));
 $css_theme                  = (array_key_exists('css', $options) && isset($options['css']['theme'])) ? $options['css']['theme'] : rtrim(setcooki_get_option('THEME_PATH', $this->wp->front), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'default.less';
 $admin_debug                = (array_key_exists('admin', $options) && isset($options['admin']['debug']));
@@ -77,6 +79,10 @@ if(setcooki_has_option('THEME_CUSTOM_PATH', $this->wp->front, true))
 
         <?php if(empty($client_id)){ ?>
             <div class="error">Please add your API Client ID and Secret to start oAuth authentication</div>
+        <? } ?>
+
+        <?php if(!is_writable(setcooki_path('plugin') . '/var')){ ?>
+            <div class="error">Please make sure that: "<span class="code"><?php echo setcooki_path('plugin') . '/var'; ?></span>" has write permissions!</div>
         <? } ?>
 
         <table class="form-table">
@@ -186,7 +192,11 @@ if(setcooki_has_option('THEME_CUSTOM_PATH', $this->wp->front, true))
             </tr>
             <tr valign="top">
                 <th scope="row"><label for="wp_wunderlist_options_list_title_wrapper">List title wrapper</label></th>
-                <td><input type="text" name="wp_wunderlist_options[list][title_wrapper]" id="wp_wunderlist_options_list_title_wrapper" size="16" value="<?php echo $list_title_wrapper; ?>" /> <span class="description">specify html title wrapper element (like h1, span, div, etc)</span></td>
+                <td><input type="text" name="wp_wunderlist_options[list][title_wrapper]" id="wp_wunderlist_options_list_title_wrapper" size="16" value="<?php echo $list_title_wrapper; ?>" /> <span class="description">specify html list title wrapper element (like h2, span, div, etc)</span></td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wp_wunderlist_options_list_task_limit">List task limit</label></th>
+                <td><input type="text" name="wp_wunderlist_options[list][task_limit]" id="wp_wunderlist_options_list_task_limit" size="16" value="<?php echo $list_task_limit; ?>" /> <span class="description">display list only if it has more than x tasks</span></td>
             </tr>
 
             <!-- TASK OPTIONS //-->
@@ -205,6 +215,11 @@ if(setcooki_has_option('THEME_CUSTOM_PATH', $this->wp->front, true))
                 <th scope="row"><label for="wp_wunderlist_options_task_note_collapse">Auto collapse note</label></th>
                 <td><input type="checkbox" name="wp_wunderlist_options[task][note_collapse]" id="wp_wunderlist_options_task_note_collapse" value="1" <?php checked($task_note_collapse); ?> /> <span class="description">show/collapse the task by default </span></td>
             </tr>
+            <tr valign="top">
+                <th scope="row"><label for="wp_wunderlist_options_task_title_wrapper">Task title wrapper</label></th>
+                <td><input type="text" name="wp_wunderlist_options[task][title_wrapper]" id="wp_wunderlist_options_task_title_wrapper" size="16" value="<?php echo $task_title_wrapper; ?>" /> <span class="description">specify html task title wrapper element (like h3, span, div, etc)</span></td>
+            </tr>
+
 
             <!-- STYLE OPTIONS //-->
             <tr valign="top" style="border-top: 1px solid #ddd;">
@@ -279,9 +294,11 @@ unset($security_whitelist);
 unset($list_default_view);
 unset($list_show_title);
 unset($list_title_wrapper);
+unset($list_task_limit);
 unset($task_show_starred);
 unset($task_show_note);
 unset($task_note_collapse);
+unset($task_title_wrapper);
 unset($css_enabled);
 unset($css_theme);
 unset($themes);

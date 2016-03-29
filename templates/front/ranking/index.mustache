@@ -1,0 +1,14 @@
+<div class="{{class}} ranking">
+    <div id="wpwl-list-{{list.id}}" class="wpwl-list readonly" data-type="list" data-id="{{list.id}}" data-revision="{{list.revision}}" data-position-id="{{list.position_id}}" data-position-revision="{{list.position_revision}}" aria-label="{{list.label}}">
+        {{#options.list.show_title}}
+            <{{list_title_wrapper}} class="wpwl-list-title">
+                {{{list.getTitle}}}
+            </{{list_title_wrapper}}>
+        {{/options.list.show_title}}
+        <ol class="wpwl-tasks sortable">
+            {{#list.tasks}}
+                {{> task }}
+            {{/list.tasks}}
+        </ol>
+    </div>
+</div>
